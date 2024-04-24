@@ -1,0 +1,101 @@
+using System.Text;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+using System;
+using Microsoft.Win32;
+using System.Windows;
+using System.IO;
+
+namespace D_hondt_beadando2
+{
+    public partial class MainWindow : Window
+    {
+        private string hasznaltFile = "";
+        public MainWindow()
+        {
+            InitializeComponent();
+            lfilenev.Text = "Üres";
+        }
+        public void btorol_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        void bfileMegnyit_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Filter = "Text files (*.txt)|*.txt";
+
+            if (ofd.ShowDialog() == true)
+            {
+                lfilenev.Text = ofd.SafeFileName;
+                hasznaltFile = ofd.FileName;
+                bgeneralas.IsEnabled = false;
+                bfileMegnyit.IsEnabled = false;
+                btorol.IsEnabled = true;
+                bment.IsEnabled = true;
+                ElemekMegJelenit();
+            }
+            else
+            {
+                lfilenev.Text = "Hibás file";
+            }
+        }
+        void ElemekMegJelenit()
+        {
+            Szimulacio sz = new Szimulacio(hasznaltFile);
+            if (sz.Ellenoriz())
+            {
+                sz.MatrixGen(matrix);
+                lszavazatszam.Content = sz.SzavazatSzam();
+                lnemszav.Content = sz.Nemszav();
+                lmandszam.Content = sz.MandSzam();
+                lpartszam.Content = sz.Partszam();
+                lnyertpart.Content = sz.NyertNev();
+                lnyertszavszam.Content = sz.NyertSzavSzam();
+                lnyertszavarany.Content = sz.NyertSzavArany() + "%";
+            }
+            else
+            {
+                lfilenev.Text = "Hibás file!";
+                lfilenev.Foreground = new SolidColorBrush(Colors.Red);
+            }
+        }
+        void Ment(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog sfd = new SaveFileDialog();
+            sfd.Filter = "Text files (*.txt)|*.txt";
+            if (sfd.ShowDialog() == true)
+            {
+                if (File.Exists(sfd.FileName))
+                {
+                    string ujFajlNev = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(sfd.FileName), System.IO.Path.GetFileNameWithoutExtension(sfd.FileName) + "_duplikalt.txt");
+                    File.Copy(hasznaltFile, ujFajlNev);
+                }
+                else
+                {
+                    File.Copy(hasznaltFile, sfd.FileName);
+                }
+            }
+        }
+
+        void Torol(object sender, RoutedEventArgs e) {
+            lfilenev.Text = "Üres";
+            lszavazatszam.Content = "0";
+            lnemszav.Content = "0";
+            lmandszam.Content = "0";
+            lpartszam.Content = "0";
+            lnyertpart.Content = "-";
+            lnyertszavszam.Content = "0";
+            lnyertszavarany.Content = "0";
+            hasznaltFile = "";
+        }
+    }
+}
