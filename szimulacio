@@ -1,0 +1,205 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
+using System.Windows.Input;
+using System.Windows.Media;
+
+namespace D_hondt_beadando2
+{
+    class Szimulacio
+    {
+
+        private int nemszav = 0;
+        private string filepath;
+        private static Random r = new Random();
+        private char[] abc = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
+        private string[] szazalek = new string[3] { "5", "10", "15" };
+
+        //konstruktor
+        public Szimulacio(string filepath)
+        {
+            this.filepath = filepath;
+        }
+
+        public bool Ellenoriz() => File.ReadLines(filepath).Count() - 1 <= 15;
+        private Dictionary<string, int> MandatumCount(List<(int, string)> k) => k.GroupBy(item => item.Item2).ToDictionary(group => group.Key, group => group.Count());
+
+        public void MatrixGen(DataGrid dgv)
+        {
+            Szamol sz = new Szamol(filepath);
+            sz.Atfordit();
+            SecondTablaKiir(dgv, sz.p);
+        }
+
+        public void SecondTablaKiir(DataGrid dataGridView, Partok p)
+        {
+            Szamol sz = new Szamol(filepath);
+            List<(int, string)> k = sz.Cserelget();
+            int n = MandatumCount(k).Sum(x => x.Value);
+
+            dataGridView.ItemsSource = null; // Töröljük az adatforrást, ha van
+
+            dataGridView.Columns.Clear();
+            dataGridView.AutoGenerateColumns = false;
+
+            for (int i = 0; i < n + 1; i++)
+            {
+                dataGridView.Columns.Add(new DataGridTextColumn
+                {
+                    Header = i == 0 ? "" : $"{i}.",
+                    Binding = new System.Windows.Data.Binding($"[{i}]")
+                });
+            }
+
+            
+
+            foreach (var part in p.Parts)
+            {
+                List<object> rowData = new List<object> { part.PartNev };
+
+                foreach (var elem in part.oszlop)
+                {
+                    rowData.Add(elem.Item1);
+                }
+
+                dataGridView.Items.Add(rowData);
+                
+                for (int i = 0; i < dataGridView.Items.Count; i++)
+                {
+                    DataGridRow row = (DataGridRow)dataGridView.ItemContainerGenerator.ContainerFromIndex(i);
+                    if (row != null)
+                    {
+                        for (int j = 1; j < dataGridView.Columns.Count; j++)
+                        {
+                            bool isTrue = part.oszlop[j - 1].Item2;
+                            if (isTrue)
+                            {
+
+                            }
+                        }
+                    }
+                }
+                
+            }
+
+            dataGridView.Loaded += (sender, e) =>
+            {
+                for (int i = 0; i < dataGridView.Items.Count; i++)
+                {
+                    DataGridRow row = (DataGridRow)dataGridView.ItemContainerGenerator.ContainerFromIndex(i);
+                    row.Height = (dataGridView.ActualHeight - 13) / p.Partszam - 1;
+                }
+            };
+
+            dataGridView.SizeChanged += (sender, e) =>
+            {
+                for (int i = 0; i < dataGridView.Columns.Count; ++i)
+                {
+                    dataGridView.Columns[i].Width = (dataGridView.ActualWidth + 1) / (n + 1);
+                }
+            };
+
+            dataGridView.KeyDown += dataGridView_KeyDown;
+        }
+    
+        private void dataGridView_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Up || e.Key == Key.Down || e.Key == Key.Left || e.Key == Key.Right)
+            {
+                e.Handled = true;
+            }
+        }
+
+        public string SzavazatSzam()
+        {
+            Szamol sz = new Szamol(filepath);
+            return sz.p.Parts.Sum(x => x.SzavazatSzam).ToString();
+        }
+        public string MandSzam()
+        {
+            Szamol sz = new Szamol(filepath);
+            List<(int, string)> k = sz.Cserelget();
+            return MandatumCount(k).Sum(x => x.Value).ToString();
+        }
+        public string NyertSzavArany()
+        {
+            Szamol sz = new Szamol(filepath);
+            List<(int, string)> k = sz.Cserelget();
+            return Math.Round(double.Parse(NyertSzavSzam()) / sz.p.Parts.Sum(x=> x.SzavazatSzam) * 100, 2).ToString();
+        }
+        public string Partszam()
+        {
+            Szamol sz = new Szamol(filepath);
+            return sz.p.Partszam.ToString();
+        }
+        public string NyertNev()
+        {
+            Szamol sz = new Szamol(filepath);
+            List<(int, string)> k = sz.Cserelget();
+            int maxInt = k.Max(tuple => tuple.Item1);
+            var maxTuple = k.First(tuple => tuple.Item1 == maxInt);
+            return maxTuple.Item2;
+        }
+        public string NyertSzavSzam()
+        {
+            Szamol sz = new Szamol(filepath);
+            return sz.p.Parts.Max(x => x.SzavazatSzam).ToString();
+        }
+        public string Nemszav()
+        {
+            Szamol sz = new Szamol(filepath);
+            return sz.p.nemszavazott.ToString();
+        }
+
+        public void General(int partszam, int mandatumszam, int nemszavazott, int szavazokszama)
+        {
+            int nullaz = 0;
+            int min = 0;
+            int max = (int)(szavazokszama * 0.75);
+            int tizsz = (int)(szavazokszama * 0.25);
+            StreamWriter w = new StreamWriter("gen.txt");
+            w.WriteLine($"{mandatumszam},{nemszavazott}");
+            for (int i = 0; i < partszam; ++i)
+            {
+                if (i != partszam - 1)
+                {
+                    if (nullaz < 2)
+                    {
+                        if (r.Next(0, 16) == 1)
+                        {
+                            w.WriteLine(string.Concat("Part", abc[i], " ", r.Next(0, 2), " ", 0, " ", szazalek[r.Next(0, 3)]));
+                            nullaz++;
+                        }
+                        else
+                        {
+                            int szavazata = szavazokszama - r.Next(min, max);
+                            szavazokszama -= szavazata;
+                            max = (int)(szavazokszama * 0.9);
+                            w.WriteLine(string.Concat("Part", abc[i], " ", r.Next(0, 2), " ", szavazata, " ", szazalek[r.Next(0, 3)]));
+                        }
+                    }
+                    else
+                    {
+                        int szavazata = szavazokszama - r.Next(min, max);
+                        szavazokszama -= szavazata;
+                        max = (int)(szavazokszama * 0.9);
+                        w.WriteLine(string.Concat("Part", abc[i], " ", r.Next(0, 2), " ", szavazata, " ", szazalek[r.Next(0, 3)]));
+
+                    }
+                }
+                else
+                {
+                    w.WriteLine(string.Concat("Part", abc[i], " ", r.Next(0, 2), " ", szavazokszama, " ", szazalek[r.Next(0, 3)]));
+                }
+            }
+            w.Close();
+        }
+
+    }
+}
