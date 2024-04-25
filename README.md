@@ -7,7 +7,7 @@
 - Diagrammok
 - Táblázatba írás
 - txt kiírása
-# Kell:
+# Kell még:
 - táblázat formázása
 - elemek ürítése
 - generálási felület
