@@ -11,4 +11,8 @@
 - táblázat formázása
 - elemek ürítése
 - generálási felület
-# Chart link: https://www.nuget.org/packages/C1.WPF.Chart/
+# Chart link: 
+- https://www.nuget.org/packages/C1.WPF.Chart/
+# Hasznos linkek:
+- https://www.youtube.com/watch?v=t9ivUosw_iI&list=PLih2KERbY1HHOOJ2C6FOrVXIwg4AZ-hk1
+- https://www.youtube.com/playlist?list=PLqj54fKHGzJPLyW17twFDkLKoLTxHZFOO (régebbi .net-hez 4.6-ig kb.)
