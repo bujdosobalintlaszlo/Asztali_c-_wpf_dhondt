@@ -1,3 +1,6 @@
+using C1.Chart;
+using C1.Util.DX;
+using C1.WPF.Chart;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -199,6 +202,56 @@ namespace D_hondt_beadando2
                 }
             }
             w.Close();
+        }
+
+        public void MandatumAranyDiagram(FlexPie f)
+        {
+            Szamol sz = new Szamol(filepath);
+            List<(int, string)> m = sz.MandatumKioszt().GroupBy(x => x.Item2).Select(group => (group.Sum(x => x.Item1), group.Key)).ToList();
+
+            FlexPieSliceCollection sliceCollection = new FlexPieSliceCollection();
+
+            foreach (var item in m)
+            {
+                FlexPieSlice slice = new FlexPieSlice();
+                slice.Name = item.Item2;
+                slice.Value = item.Item1;
+                sliceCollection.Add(slice);
+            }
+
+            f.ItemsSource = sliceCollection;
+        }
+
+
+        public void SzavazatiAranyDiagram(FlexPie f)
+        {
+            Szamol sz = new Szamol(filepath);
+            FlexPieSliceCollection sliceCollection = new FlexPieSliceCollection();
+            sz.p.Parts.ForEach(part => {
+                FlexPieSlice slice = new FlexPieSlice();
+                slice.Name = part.PartNev;
+                slice.Value = part.SzavazatSzam;
+                sliceCollection.Add(slice);
+            }); 
+            f.ItemsSource = sliceCollection;
+        }
+
+        public void SzavazatokEsPartok(FlexChart c)
+        {
+            Szamol sz = new Szamol(filepath);
+            c.Series.Clear(); // Clear existing series if needed
+
+            Series series = new Series();
+            series.ChartType = ChartType.Column; // Choose the appropriate chart type
+
+            for (int i = 0; i < sz.p.Parts.Count; ++i)
+            {
+                series.Binding = "SzavazatSzam"; // Set the binding property for Y values
+                series.BindingX = "PartNev"; // Set the binding property for X values
+                series.ItemsSource = sz.p.Parts; // Set the item source for the series
+            }
+
+            c.Series.Add(series);
         }
 
     }
