@@ -1,4 +1,4 @@
-# Asztali_c-_wpf_dhondt
+# Asztali alkalmazások beadandó - Mózes Bence, Bujdosó Bálint
 # A charthoz ez kell:C1.WPF.Chart - Eddigi állás:
 ![Névtelen](https://github.com/bujdosobalintlaszlo/Asztali_c-_wpf_dhondt/assets/118969351/9f1fd9b2-957d-4217-8828-10587aa711cd)
 # Működik:
