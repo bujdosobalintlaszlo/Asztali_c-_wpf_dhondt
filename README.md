@@ -10,6 +10,7 @@
 - txt kiírása
 - generálás
 - adatok ürítése
+- input nevének kiírása
 # Kell még:
 - táblázat szinezés
 - Limitek generálásnál
