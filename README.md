@@ -10,6 +10,7 @@
 - txt kiírása
 # Kell még:
 - táblázat szinezés
+- Limitek generálásnál
 # Chart link: 
 - https://www.nuget.org/packages/C1.WPF.Chart/
 # Hasznos linkek:
