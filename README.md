@@ -9,9 +9,7 @@
 - Táblázatba írás
 - txt kiírása
 # Kell még:
-- táblázat formázása
-- elemek ürítése
-- generálási felület
+- táblázat szinezés
 # Chart link: 
 - https://www.nuget.org/packages/C1.WPF.Chart/
 # Hasznos linkek:
