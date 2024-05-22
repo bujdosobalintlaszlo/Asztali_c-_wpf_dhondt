@@ -8,6 +8,8 @@
 - Diagrammok
 - Táblázatba írás
 - txt kiírása
+- generálás
+- adatok ürítése
 # Kell még:
 - táblázat szinezés
 - Limitek generálásnál
